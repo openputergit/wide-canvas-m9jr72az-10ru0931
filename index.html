@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9f9f9;
+        }
+        .calculator {
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        .calc-btn {
+            box-shadow: 0 4px 0 rgb(208 121 29);
+            transition: all 0.1s ease;
+        }
+        .calc-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 rgb(208 121 29);
+        }
+        .clear-btn {
+            box-shadow: 0 4px 0 #b3b3b3;
+        }
+        .clear-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #b3b3b3;
+        }
+        .number-btn {
+            box-shadow: 0 4px 0 rgb(208 121 29);
+        }
+        .number-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 rgb(208 121 29);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-white to-gray-100">
+    <div class="calculator bg-white rounded-2xl w-full max-w-[320px] p-6 border border-gray-200">
+        <div>
+            <input type="text" id="display" readonly class="w-full h-20 text-right text-3xl p-4 rounded-lg bg-gray-100 mb-5 focus:outline-none border border-gray-200" value="0">
+            
+            <div class="grid grid-cols-4 gap-3">
+                <button onclick="clearDisplay()" class="clear-btn bg-gray-200 h-14 rounded-lg text-xl font-semibold hover:bg-gray-300 active:bg-gray-400 text-gray-800">C</button>
+                <button onclick="appendOperator('/')" class="calc-btn bg-orange-500 h-14 rounded-lg text-xl font-semibold text-white hover:bg-orange-600 active:bg-orange-700">÷</button>
+                <button onclick="appendOperator('*')" class="calc-btn bg-orange-500 h-14 rounded-lg text-xl font-semibold text-white hover:bg-orange-600 active:bg-orange-700">×</button>
+                <button onclick="backspace()" class="calc-btn bg-orange-500 h-14 rounded-lg text-xl font-semibold text-white hover:bg-orange-600 active:bg-orange-700">⌫</button>
+                
+                <button onclick="appendNumber('7')" class="number-btn bg-orange-500 h-14 rounded-lg text-xl font-semibold hover:bg-orange-600 active:bg-orange-700 text-white">7</button>
+                <button onclick="appendNumber('8')" class="number-btn bg-orange-500 h-14 rounded-lg text-xl font-semibold hover:bg-orange-600 active:bg-orange-700 text-white">8</button>
+                <button onclick="appendNumber('9')" class="number-btn bg-orange-500 h-14 rounded-lg text-xl font-semibold hover:bg-orange-600 active:bg-orange-700 text-white">9</button>
+                <button onclick="appendOperator('-')" class="calc-btn bg-orange-500 h-14 rounded-lg text-xl font-semibold text-white hover:bg-orange-600 active:bg-orange-700">-</button>
+                
+                <button onclick="appendNumber('4')" class="number-btn bg-orange-500 h-14 rounded-lg text-xl font-semibold hover:bg-orange-600 active:bg-orange-700 text-white">4</button>
+                <button onclick="appendNumber('5')" class="number-btn bg-orange-500 h-14 rounded-lg text-xl font-semibold hover:bg-orange-600 active:bg-orange-700 text-white">5</button>
+                <button onclick="appendNumber('6')" class="number-btn bg-orange-500 h-14 rounded-lg text-xl font-semibold hover:bg-orange-600 active:bg-orange-700 text-white">6</button>
+                <button onclick="appendOperator('+')" class="calc-btn bg-orange-500 h-14 rounded-lg text-xl font-semibold text-white hover:bg-orange-600 active:bg-orange-700">+</button>
+                
+                <button onclick="appendNumber('1')" class="number-btn bg-orange-500 h-14 rounded-lg text-xl font-semibold hover:bg-orange-600 active:bg-orange-700 text-white">1</button>
+                <button onclick="appendNumber('2')" class="number-btn bg-orange-500 h-14 rounded-lg text-xl font-semibold hover:bg-orange-600 active:bg-orange-700 text-white">2</button>
+                <button onclick="appendNumber('3')" class="number-btn bg-orange-500 h-14 rounded-lg text-xl font-semibold hover:bg-orange-600 active:bg-orange-700 text-white">3</button>
+                <button onclick="calculate()" class="calc-btn bg-orange-600 h-31 rounded-lg text-xl font-semibold text-white hover:bg-orange-700 active:bg-orange-800 row-span-2 flex items-center justify-center" style="box-shadow: 0 6px 0 rgb(180 100 25);">=</button>
+                
+                <button onclick="appendNumber('0')" class="number-btn bg-orange-500 h-14 rounded-lg text-xl font-semibold hover:bg-orange-600 active:bg-orange-700 col-span-2 text-white">0</button>
+                <button onclick="appendNumber('.')" class="number-btn bg-orange-500 h-14 rounded-lg text-xl font-semibold hover:bg-orange-600 active:bg-orange-700 text-white">.</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let display = document.getElementById('display');
+        let currentValue = '0';
+        let newNumber = true;
+
+        function updateDisplay() {
+            display.value = currentValue;
+        }
+
+        function appendNumber(num) {
+            if (newNumber) {
+                currentValue = num;
+                newNumber = false;
+            } else {
+                if (currentValue === '0' && num !== '.') {
+                    currentValue = num;
+                } else {
+                    currentValue += num;
+                }
+            }
+            updateDisplay();
+        }
+
+        function appendOperator(op) {
+            if (!currentValue.toString().endsWith(' ') && 
+                !currentValue.toString().endsWith('+') && 
+                !currentValue.toString().endsWith('-') && 
+                !currentValue.toString().endsWith('*') && 
+                !currentValue.toString().endsWith('/')) {
+                currentValue += ' ' + op + ' ';
+                newNumber = false;
+            }
+            updateDisplay();
+        }
+
+        function calculate() {
+            try {
+                currentValue = eval(currentValue.replace('×', '*').replace('÷', '/')).toString();
+                newNumber = true;
+            } catch (e) {
+                currentValue = 'Error';
+                newNumber = true;
+            }
+            updateDisplay();
+        }
+
+        function clearDisplay() {
+            currentValue = '0';
+            newNumber = true;
+            updateDisplay();
+        }
+
+        function backspace() {
+            if (currentValue.length > 1) {
+                currentValue = currentValue.slice(0, -1);
+            } else {
+                currentValue = '0';
+                newNumber = true;
+            }
+            updateDisplay();
+        }
+
+        // Enable keyboard input
+        document.addEventListener('keydown', (event) => {
+            if (event.key >= '0' && event.key <= '9' || event.key === '.') {
+                appendNumber(event.key);
+            } else if (['+', '-', '*', '/'].includes(event.key)) {
+                appendOperator(event.key);
+            } else if (event.key === 'Enter' || event.key === '=') {
+                calculate();
+            } else if (event.key === 'Backspace') {
+                backspace();
+            } else if (event.key === 'Escape') {
+                clearDisplay();
+            }
+        });
+    </script>
+<script>document.body.addEventListener('wheel', e => { if (!e.ctrlKey) return; e.preventDefault(); return }, { passive: false })</script>
+	</body>
+</html>
